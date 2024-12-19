@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Quarto Basics</title>
+<title>Evolving the Climate Resilience Data Platform from Prototype to a Stable Version</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Quarto Basics</h1>
+<h1 class="title">Evolving the Climate Resilience Data Platform from Prototype to a Stable Version</h1>
 </div>
 
 
@@ -96,36 +96,79 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>For a demonstration of a line plot on a polar axis, see <a href="#fig-polar" class="quarto-xref">Figure&nbsp;1</a>.</p>
-<div id="cell-fig-polar" class="cell" data-execution_count="1">
+<p>Suppose you’ve followed my journey in developing the <a href="https://github.com/republicofdata-io/climate_resilience">Climate Narrative data platform</a>. In that case, you will understand that a significant portion of the work has involved rapidly iterating on designs to create a prototype. I aimed to reach a minimum viable product (MVP) to assess whether those ideas had potential.</p>
+<p>In the past few weeks, I have focused on stabilizing the platform by refactoring various areas of the codebase. With this task complete, I would like to share an overview of the current status. I will explain how the platform captures and transforms social conversation data for a specific climate-related media article.</p>
+<section id="design" class="level2">
+<h2 class="anchored" data-anchor-id="design">🏛️ Design</h2>
+<p><img src="climate_narratives_dag.png" class="img-fluid"></p>
+</section>
+<section id="data-assets" class="level2">
+<h2 class="anchored" data-anchor-id="data-assets">📊 Data Assets</h2>
+<p>Let’s start by listing the data assets we have on the platform.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I’m using the <a href="https://github.com/republicofdata-io/damn">damn_tool</a> package to list the assets.</p>
+</div>
+</div>
+<div id="79433bbb" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> damn_tool.ls <span class="im">import</span> list_assets</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">2</span>, <span class="fl">0.01</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> r</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  subplot_kw <span class="op">=</span> {<span class="st">'projection'</span>: <span class="st">'polar'</span>} </span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>ax.plot(theta, r)<span class="op">;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>ax.set_rticks([<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="fl">1.5</span>, <span class="dv">2</span>])<span class="op">;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>ax.grid(<span class="va">True</span>)<span class="op">;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> list_assets(configs_dir<span class="op">=</span><span class="st">"../.damn/"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> json.loads(result)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>organized_data <span class="op">=</span> {}</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> item <span class="kw">in</span> data[<span class="st">"ls"</span>]:</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    product, key <span class="op">=</span> item.split(<span class="st">"/"</span>, <span class="dv">1</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> product <span class="kw">not</span> <span class="kw">in</span> organized_data:</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        organized_data[product] <span class="op">=</span> []</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    organized_data[product].append(key)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> product, keys <span class="kw">in</span> organized_data.items():</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>product<span class="sc">}</span><span class="ss">:"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> key <span class="kw">in</span> keys:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f" - </span><span class="sc">{</span>key<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
-<div id="fig-polar" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-polar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="20241227_files/figure-html/fig-polar-output-1.png" width="450" height="439" class="figure-img">
+<div class="cell-output cell-output-stdout">
+<pre><code>analytics:
+ - int__media_articles
+ - int__social_network_conversations
+ - int__social_network_posts
+ - int__social_network_user_profiles
+ - media_articles_fct
+ - social_network_conversations_dim
+ - social_network_posts_fct
+ - social_network_user_profiles_dim
+ - stg__conversation_classifications
+ - stg__conversation_event_summaries
+ - stg__nytimes_articles
+ - stg__post_narrative_associations
+ - stg__user_geolocations
+ - stg__x_conversation_posts
+ - stg__x_conversations
+media:
+ - nytimes_articles
+narratives:
+ - conversation_classifications
+ - conversation_event_summary
+ - post_narrative_associations
+social_networks:
+ - user_geolocations
+ - x_conversation_posts
+ - x_conversations</code></pre>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-polar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: A line plot on a polar axis
-</figcaption>
-</figure>
 </div>
-</div>
-</div>
+</section>
 
 </main>
 <!-- /main column -->

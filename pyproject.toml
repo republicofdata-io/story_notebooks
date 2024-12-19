@@ -10,6 +10,7 @@ python = "^3.10"
 jupyter = "^1.1.1"
 numpy = "^2.2.0"
 matplotlib = "^3.10.0"
+damn-tool = { path = "/Users/olivierdupuis/dev/damn", develop = true }
 
 
 [build-system]

@@ -1,27 +1,42 @@
 ---
-title: "Quarto Basics"
+title: "Evolving the Climate Resilience Data Platform from Prototype to a Stable Version"
 format:
   html:
     code-fold: true
 jupyter: python3
 ---
 
-For a demonstration of a line plot on a polar axis, see @fig-polar.
+Suppose you've followed my journey in developing the [Climate Narrative data platform](https://github.com/republicofdata-io/climate_resilience). In that case, you will understand that a significant portion of the work has involved rapidly iterating on designs to create a prototype. I aimed to reach a minimum viable product (MVP) to assess whether those ideas had potential.
+
+In the past few weeks, I have focused on stabilizing the platform by refactoring various areas of the codebase. With this task complete, I would like to share an overview of the current status. I will explain how the platform captures and transforms social conversation data for a specific climate-related media article.
+
+## 🏛️ Design
+![](climate_narratives_dag.png)
+
+## 📊 Data Assets
+Let's start by listing the data assets we have on the platform.
+
+::: {.callout-note}
+I'm using the [damn_tool](https://github.com/republicofdata-io/damn) package to list the assets. 
+:::
+
 
 ```{python}
-#| label: fig-polar
-#| fig-cap: "A line plot on a polar axis"
+import json
+from damn_tool.ls import list_assets
 
-import numpy as np
-import matplotlib.pyplot as plt
+result = list_assets(configs_dir="../.damn/")
+data = json.loads(result)
 
-r = np.arange(0, 2, 0.01)
-theta = 2 * np.pi * r
-fig, ax = plt.subplots(
-  subplot_kw = {'projection': 'polar'} 
-)
-ax.plot(theta, r);
-ax.set_rticks([0.5, 1, 1.5, 2]);
-ax.grid(True);
-plt.show()
+organized_data = {}
+for item in data["ls"]:
+    product, key = item.split("/", 1)
+    if product not in organized_data:
+        organized_data[product] = []
+    organized_data[product].append(key)
+
+for product, keys in organized_data.items():
+    print(f"{product}:")
+    for key in keys:
+        print(f" - {key}")
 ```

@@ -1,22 +1,36 @@
 ---
-title: "Bla"
+title: "The Journey of a Conversation on the Climate Resilience Data Platform"
 format:
   html:
     code-fold: true
 jupyter: python3
 ---
 
-Bla
+We've iterated quickly over the past months to put together a platform that captures climate-related conversations on social networks. We shared our journey and turned a blind eye on the tech debt we accumulated. Or didn't blink twice when confronted with suspicious data quality.
+
+The last months might not have led to any breakthrough innovation worth reporting on, but we have been busy. Refactoring our asset's management system, enforcing stricer typed datasets, productionizing AI agents, and more.
+
+Now that we're on the eve of using this platform to publish new editions of the Climate Narratives Report, it's time to take a step back, and look at the output.
+
+::: {.callout-note}
+At [RepublicOfData.io](https://republicofdata.io), we openly share our code and journey. Here's a list of repositories that are part of this project:
+
+- [Climate Resilience Data Platform](https://github.com/republicofdata-io/climate_resilience): the data platform itself.
+- [Story notebooks](https://github.com/republicofdata-io/story_notebooks): the notebooks to interact with the data.
+- [Damn Tool](https://github.com/republicofdata-io/damn): a tool to interact with the platform's assets.
+:::
 
 ## 🏛️ Design
 ![](climate_narratives_dag.png)
 
 ## 📊 Data Assets
-Let's start by listing the data assets we have on the platform.
+Let's start by listing the data assets we have on the platform. We have 4 key data products:
 
-::: {.callout-note}
-I'm using the [damn_tool](https://github.com/republicofdata-io/damn) package to list the assets. 
-:::
+- `media`: Those are the climate-related articles we source.
+- `social_networks`: Which inlcudes all the conversations that refer to the articles above.
+- `narratives`: The classification of conversations and posts into discourse types and narratives.
+- `analytics`: The data assets that are used for analysis and reporting.
+
 
 
 ```{python}

@@ -95,7 +95,30 @@ query_job = client.query(query)
 
 # Wait for the job to complete.
 articles_df = query_job.result().to_dataframe()
-articles_df
+articles_df.style
 ```
 
+Articles are the foundation of platform. We then sniff social networks for any conversations that refer to them. We then capture those conversations as they have a high likelyhood of expression opinions around climate change.
+
+### Social Networks Assets
+Let's now get some details on conversations that occur on X.
+
+```{python}
+from damn_tool.show import show_asset
+
+result = show_asset('social_networks/x_conversations', configs_dir="../.damn/")
+data = json.loads(result)
+
+print(json.dumps(data, indent=4))
+```
+
+And some metrics:
+```{python}
+from damn_tool.metrics import asset_metrics
+
+result = asset_metrics('social_networks/x_conversations', configs_dir="../.damn/")
+data = json.loads(result)
+
+print(json.dumps(data, indent=4))
+```
 

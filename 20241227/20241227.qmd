@@ -1,14 +1,12 @@
 ---
-title: "Evolving the Climate Resilience Data Platform from Prototype to a Stable Version"
+title: "Bla"
 format:
   html:
     code-fold: true
 jupyter: python3
 ---
 
-Suppose you've followed my journey in developing the [Climate Narrative data platform](https://github.com/republicofdata-io/climate_resilience). In that case, you will understand that a significant portion of the work has involved rapidly iterating on designs to create a prototype. I aimed to reach a minimum viable product (MVP) to assess whether those ideas had potential.
-
-In the past few weeks, I have focused on stabilizing the platform by refactoring various areas of the codebase. With this task complete, I would like to share an overview of the current status. I will explain how the platform captures and transforms social conversation data for a specific climate-related media article.
+Bla
 
 ## 🏛️ Design
 ![](climate_narratives_dag.png)

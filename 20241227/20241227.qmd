@@ -24,14 +24,7 @@ At [RepublicOfData.io](https://republicofdata.io), we openly share our code and 
 ![](climate_narratives_dag.png)
 
 ## 📊 Data Assets
-Let's start by listing the data assets we have on the platform. We have 4 key data products:
-
-- `media`: Those are the climate-related articles we source.
-- `social_networks`: Which inlcudes all the conversations that refer to the articles above.
-- `narratives`: The classification of conversations and posts into discourse types and narratives.
-- `analytics`: The data assets that are used for analysis and reporting.
-
-
+Let's start by listing the data assets we have on the platform. 
 
 ```{python}
 import json
@@ -52,3 +45,57 @@ for product, keys in organized_data.items():
     for key in keys:
         print(f" - {key}")
 ```
+
+We have 4 key data products:
+
+- `media`: The climate-related articles we source.
+- `social_networks`: The conversations that refer to the articles above.
+- `narratives`: The classification of conversations and posts into discourse types and narratives.
+- `analytics`: The dimensional representation of those asset for reporting purposes.
+
+### Media Assets
+Let's now get some details on our media assets.
+
+```{python}
+from damn_tool.show import show_asset
+
+result = show_asset('media/nytimes_articles', configs_dir="../.damn/")
+data = json.loads(result)
+
+print(json.dumps(data, indent=4))
+```
+
+And some metrics:
+```{python}
+from damn_tool.metrics import asset_metrics
+
+result = asset_metrics('media/nytimes_articles', configs_dir="../.damn/")
+data = json.loads(result)
+
+print(json.dumps(data, indent=4))
+```
+
+Let's now pull a sample of data from this asset:
+
+```{python}
+import pandas as pd
+from google.cloud import bigquery
+
+# Construct a BigQuery client object.
+client = bigquery.Client()
+
+# TODO: Set your query here
+query = """
+    select * from `phonic-biplane-420020.media.nytimes_articles`
+    order by published_ts desc
+    limit 5"""
+
+# Make an API request.
+query_job = client.query(query)
+
+# Wait for the job to complete.
+articles_df = query_job.result().to_dataframe()
+articles_df
+```
+
+

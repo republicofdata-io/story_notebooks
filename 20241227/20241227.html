@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="20241227_files/libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="20241227_files/libs/clipboard/clipboard.min.js"></script>
 <script src="20241227_files/libs/quarto-html/quarto.js"></script>
 <script src="20241227_files/libs/quarto-html/popper.min.js"></script>
 <script src="20241227_files/libs/quarto-html/tippy.umd.min.js"></script>
@@ -67,6 +67,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="20241227_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="20241227_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="20241227_files/libs/bootstrap/bootstrap-973236bd072d72a04ee9cd82dcc9cb29.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -123,14 +126,8 @@ Note
 </section>
 <section id="data-assets" class="level2">
 <h2 class="anchored" data-anchor-id="data-assets">📊 Data Assets</h2>
-<p>Let’s start by listing the data assets we have on the platform. We have 4 key data products:</p>
-<ul>
-<li><code>media</code>: Those are the climate-related articles we source.</li>
-<li><code>social_networks</code>: Which inlcudes all the conversations that refer to the articles above.</li>
-<li><code>narratives</code>: The classification of conversations and posts into discourse types and narratives.</li>
-<li><code>analytics</code>: The data assets that are used for analysis and reporting.</li>
-</ul>
-<div id="b4027ec9" class="cell" data-execution_count="1">
+<p>Let’s start by listing the data assets we have on the platform.</p>
+<div id="e0ec95a6" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
@@ -180,6 +177,205 @@ social_networks:
  - x_conversations</code></pre>
 </div>
 </div>
+<p>We have 4 key data products:</p>
+<ul>
+<li><code>media</code>: The climate-related articles we source.</li>
+<li><code>social_networks</code>: The conversations that refer to the articles above.</li>
+<li><code>narratives</code>: The classification of conversations and posts into discourse types and narratives.</li>
+<li><code>analytics</code>: The dimensional representation of those asset for reporting purposes.</li>
+</ul>
+<section id="media-assets" class="level3">
+<h3 class="anchored" data-anchor-id="media-assets">Media Assets</h3>
+<p>Let’s now get some details on our media assets.</p>
+<div id="3a04154b" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> damn_tool.show <span class="im">import</span> show_asset</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> show_asset(<span class="st">'media/nytimes_articles'</span>, configs_dir<span class="op">=</span><span class="st">"../.damn/"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> json.loads(result)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(json.dumps(data, indent<span class="op">=</span><span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+    "show": {
+        "From orchestrator": {
+            "description": "Media feed for New York Times",
+            "computeKind": "python",
+            "policyType": null,
+            "maximumLagMinutes": null,
+            "cronSchedule": null,
+            "isPartitioned": true,
+            "dependedByKeys": [
+                [
+                    "social_networks",
+                    "x_conversations"
+                ],
+                [
+                    "narratives",
+                    "conversation_event_summary"
+                ],
+                [
+                    "analytics",
+                    "stg__nytimes_articles"
+                ]
+            ],
+            "dependencyKeys": [],
+            "metadataEntries": {
+                "num_rows": 1,
+                "dagster/partition_row_count": 1
+            }
+        },
+        "From data warehouse": null
+    }
+}</code></pre>
+</div>
+</div>
+<p>And some metrics:</p>
+<div id="5e4751b3" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> damn_tool.metrics <span class="im">import</span> asset_metrics</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> asset_metrics(<span class="st">'media/nytimes_articles'</span>, configs_dir<span class="op">=</span><span class="st">"../.damn/"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> json.loads(result)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(json.dumps(data, indent<span class="op">=</span><span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+    "metrics": {
+        "From orchestrator": {
+            "run_id": "ec604c6f-9c35-475f-bd6e-a5656fd17aff",
+            "status": "SUCCESS",
+            "start_time": "2024-12-19 15:01:47",
+            "end_time": "2024-12-19 15:01:55",
+            "elapsed_time": "0:00:08.754833",
+            "num_partitions": 2160,
+            "num_materialized": 176,
+            "num_failed": 0
+        },
+        "From IO manager": null,
+        "From data warehouse": null
+    }
+}</code></pre>
+</div>
+</div>
+<p>Let’s now pull a sample of data from this asset:</p>
+<div id="ebdc59e5" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> google.cloud <span class="im">import</span> bigquery</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct a BigQuery client object.</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> bigquery.Client()</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Set your query here</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="st">    select * from `phonic-biplane-420020.media.nytimes_articles`</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">    order by published_ts desc</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="st">    limit 5"""</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Make an API request.</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>query_job <span class="op">=</span> client.query(query)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Wait for the job to complete.</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>articles_df <span class="op">=</span> query_job.result().to_dataframe()</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>articles_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/olivierdupuis/dev/story_notebooks/.venv/lib/python3.13/site-packages/google/cloud/bigquery/table.py:1727: UserWarning: BigQuery Storage module not found, fetch data with the REST endpoint instead.
+  warnings.warn(</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">MEDIA</th>
+<th data-quarto-table-cell-role="th">ID</th>
+<th data-quarto-table-cell-role="th">TITLE</th>
+<th data-quarto-table-cell-role="th">LINK</th>
+<th data-quarto-table-cell-role="th">SUMMARY</th>
+<th data-quarto-table-cell-role="th">AUTHOR</th>
+<th data-quarto-table-cell-role="th">TAGS</th>
+<th data-quarto-table-cell-role="th">MEDIAS</th>
+<th data-quarto-table-cell-role="th">PUBLISHED_TS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>nytimes</td>
+<td>https://www.nytimes.com/2024/12/19/climate/how...</td>
+<td>How the Climate Crisis Became an Insurance Crisis</td>
+<td>https://www.nytimes.com/2024/12/19/climate/how...</td>
+<td>Even in formerly low-risk areas, home insurers...</td>
+<td>Christopher Flavelle</td>
+<td>Global Warming,Law and Legislation,Insurance,H...</td>
+<td>https://static01.nyt.com/images/2024/12/19/mul...</td>
+<td>2024-12-19 19:42:33</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>nytimes</td>
+<td>https://www.nytimes.com/2024/12/16/science/orr...</td>
+<td>Orrin H. Pilkey, Warrior in a Fight to Save Im...</td>
+<td>https://www.nytimes.com/2024/12/16/science/orr...</td>
+<td>An eminent geologist, he argued against puttin...</td>
+<td>Cornelia Dean</td>
+<td>Pilkey, Orrin H Jr,Deaths (Obituaries),Beaches...</td>
+<td>https://static01.nyt.com/images/2024/12/17/obi...</td>
+<td>2024-12-19 16:35:28</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>nytimes</td>
+<td>https://www.nytimes.com/2024/12/19/climate/bid...</td>
+<td>Biden, Headed to the Exit, Sets an Aggressive ...</td>
+<td>https://www.nytimes.com/2024/12/19/climate/bid...</td>
+<td>The promise of deeper emissions cuts will very...</td>
+<td>Brad Plumer and Lisa Friedman</td>
+<td>United States,United Nations Framework Convent...</td>
+<td>https://static01.nyt.com/images/2024/11/18/mul...</td>
+<td>2024-12-19 10:00:44</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>nytimes</td>
+<td>https://www.nytimes.com/2024/12/18/climate/cal...</td>
+<td>E.P.A. Allows California to Ban Sales of New G...</td>
+<td>https://www.nytimes.com/2024/12/18/climate/cal...</td>
+<td>The Trump administration is expected to revoke...</td>
+<td>Coral Davenport</td>
+<td>Global Warming,Greenhouse Gas Emissions,Federa...</td>
+<td>https://static01.nyt.com/images/2024/12/18/cli...</td>
+<td>2024-12-18 23:48:25</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>nytimes</td>
+<td>https://www.nytimes.com/2024/12/18/climate/hel...</td>
+<td>Youth Climate Activists Get Major Win in Monta...</td>
+<td>https://www.nytimes.com/2024/12/18/climate/hel...</td>
+<td>The court agreed that the state’s energy polic...</td>
+<td>Karen Zraick</td>
+<td>Global Warming,Decisions and Verdicts,Supreme ...</td>
+<td>https://static01.nyt.com/images/2023/08/15/mul...</td>
+<td>2024-12-18 22:36:05</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
 </section>
 
 </main>
